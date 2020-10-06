@@ -1,7 +1,12 @@
 
+if (typeof CryptoJS === 'undefined' || CryptoJS === null) {
+    var CryptoJS = require('crypto-js');
+}
+
 function BrainCloudManager ()
 {
     var bcm = this;
+    var _setInterval = typeof customSetInterval === 'function' ? customSetInterval : setInterval;
 
     bcm.name = "BrainCloudManager";
 
@@ -18,6 +23,8 @@ function BrainCloudManager ()
     bcm._idleTimeout = 30;
     bcm._heartBeatIntervalId = null;
     bcm._bundlerIntervalId = null;
+    bcm._packetTimeouts = [15, 20, 35, 50];
+    bcm._retry = 0;
 
     bcm._appId = "";
     bcm._secret = "";
@@ -67,6 +74,10 @@ function BrainCloudManager ()
     bcm.setServerUrl = function(serverUrl)
     {
         bcm._serverUrl = serverUrl;
+        if (bcm._serverUrl.endsWith("/dispatcherv2"))
+        {
+            bcm._serverUrl = bcm._serverUrl.substring(0, bcm._serverUrl.length - "/dispatcherv2".length);
+        }
         while (bcm._serverUrl.length > 0 && bcm._serverUrl.charAt(bcm._serverUrl.length - 1) == '/')
         {
             bcm._serverUrl = bcm._serverUrl.substring(0, bcm._serverUrl.length - 1);
@@ -102,6 +113,14 @@ function BrainCloudManager ()
 
     bcm.setSessionId = function(sessionId)
     {
+        if(sessionId !== null || sessionId !== "")
+        {
+            bcm._isAuthenticated = true;
+        }
+        else
+        {
+            bcm._packetId = -1; 
+        }
         bcm._sessionId = sessionId;
     };
 
@@ -270,6 +289,7 @@ function BrainCloudManager ()
         bcm._sendQueue = [];
         bcm._inProgressQueue = [];
         bcm._sessionId = "";
+        bcm.packetId = -1;
         bcm._isAuthenticated = false;
         bcm._requestInProgress = false;
 
@@ -318,7 +338,7 @@ function BrainCloudManager ()
     bcm.startHeartBeat = function()
     {
         bcm.stopHeartBeat();
-        bcm._heartBeatIntervalId = setInterval(function()
+        bcm._heartBeatIntervalId = _setInterval(function()
         {
             bcm.sendRequest({
                 service : "heartbeat",
@@ -474,7 +494,7 @@ function BrainCloudManager ()
                     bcm._statusMessageCache = messages[c].status_message;
                 }
 
-                console.log("STATUSCodes:" + bcm.statusCodes.CLIENT_NETWORK_ERROR);
+                bcm.debugLog("STATUSCodes:" + bcm.statusCodes.CLIENT_NETWORK_ERROR);
                 bcm.updateKillSwitch(bcm._inProgressQueue[c].service, bcm._inProgressQueue[c].operation, statusCode)
             }
 
@@ -499,7 +519,7 @@ function BrainCloudManager ()
 
     bcm.fakeErrorResponse = function(statusCode, reasonCode, message)
     {
-        var responses = [bcm._inProgressQueue.length];
+        var responses = [];
 
         var response = {};
         response.status = statusCode;
@@ -509,13 +529,13 @@ function BrainCloudManager ()
 
         for (var i = 0; i < bcm._inProgressQueue.length; i++)
         {
-            responses[i] = response;
+            responses.push(response);
         }
 
         bcm.handleSuccessResponse(
-            {
-                "responses": responses
-            });
+        {
+            "responses": responses
+        });
     }
 
     bcm.setHeader = function(xhr)
@@ -527,7 +547,7 @@ function BrainCloudManager ()
 
     bcm.retry = function()
     {
-        if (bcm._retry <= 2)
+        if (bcm._retry <= bcm._packetTimeouts.length)
         {
             bcm._retry++;
             bcm.debugLog("Retry # " + bcm._retry.toString(), false);
@@ -538,8 +558,8 @@ function BrainCloudManager ()
             }
             else
             {
-                bcm.debugLog("Waiting for 10 sec...", false);
-                setTimeout(bcm.performQuery, 10000);
+                bcm.debugLog("Waiting for " + bcm._packetTimeouts[bcm._retry - 1] + " sec...", false);
+                setTimeout(bcm.performQuery, bcm._packetTimeouts[bcm._retry - 1] * 1000);
             }
         }
         else
@@ -662,7 +682,7 @@ function BrainCloudManager ()
         }; // end inner function
 
         // Set a timeout. Some implementation doesn't implement the XMLHttpRequest timeout and ontimeout (Including nodejs and chrome!)
-        bcm.xml_timeoutId = setTimeout(xmlhttp.ontimeout_bc, 15000);
+        bcm.xml_timeoutId = setTimeout(xmlhttp.ontimeout_bc, bcm._packetTimeouts[0] * 1000);
 
         xmlhttp.open("POST", bcm._dispatcherUrl, true);
         xmlhttp.setRequestHeader("Content-type", "application/json");

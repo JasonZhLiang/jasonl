@@ -20,6 +20,7 @@
 <script src="client/brainCloudClient-player-statistics.js"></script>
 <script src="client/brainCloudClient-entity.js"></script>
 <script src="client/brainCloudClient-chat.js"></script>
+<script src="client/brainCloudClient-custom-entity.js"></script>
 <script src="client/brainCloudClient-lobby.js"></script>
 <script src="client/brainCloudClient-messaging.js"></script>
 <script src="client/brainCloudClient-presence.js"></script>
@@ -33,6 +34,14 @@
 <script src="client/brainCloudClient-push-notifications.js"></script>
 <script src="client/brainCloudClient-player-statistics-event.js"></script>
 <script src="client/brainCloudClient-global-app.js"></script>
+<script src="client/brainCloudClient-global-file.js"></script>
+<script src="client/brainCloudClient-item-catalog.js"></script>
+<script src="client/brainCloudClient-match-making.js"></script>
+<script src="client/brainCloudClient-relay.js"></script>
+<script src="client/brainCloudClient-time-utils.js"></script>
+<script src="client/brainCloudRelayComms.js"></script>
+<script src="client/brainCloudClient-user-items.js"></script>
+
 <script src="client/brainCloudClient-friend.js"></script>
 <script src="client/brainCloudClient-events.js"></script>
 <script src="client/brainCloudClient-gamification.js"></script>
@@ -47,7 +56,6 @@
 <script src="client/brainCloudClient-time.js"></script>
 <script src="client/brainCloudClient-tournament.js"></script>
 <script src="client/brainCloudClient-abtests.js"></script>
-<script src="client/brainCloudClient-global-app.js"></script>
 <script src="client/brainCloudClient-s3-handler.js"></script>
 <script src="client/brainCloudClient-identity.js"></script>
 <script src="client/brainCloudClient-redemption-code.js"></script>
@@ -91,6 +99,9 @@
 	$(window).load(function() {
 		document.getElementById("appId").value = "13229";
 		document.getElementById("appSecret").value = "c100c4c2-92e6-4a12-8be0-4a9b5e95a66f";
+		// document.getElementById("appId").value = "13261";
+		// document.getElementById("appSecret").value = "7d2f8466-7413-4120-bb10-17e4ad0469a2";
+
 		document.getElementById("serverUrl").value = "https://sharedprod.braincloudservers.com";
 
 		document.getElementById("userName").value = "TEST_USER";
@@ -143,8 +154,41 @@
 				document.getElementById('profileId').innerHTML = "ProfileId: " + brainCloud.brainCloudClient.authentication.profileId;
 				document.getElementById('profileId').value = brainCloud.brainCloudClient.authentication.profileId;
 
+
+				// //test for client  match ID 0fd1340d-349c-44b9-9dbf-9cf4b7dcc351, game ID 13261 and owner ID e7d0f3bf-4019-4811-a6c2-0db877f8252c
+				// var ownerId = "e7d0f3bf-4019-4811-a6c2-0db877f8252c";
+				// var matchId = "0fd1340d-349c-44b9-9dbf-9cf4b7dcc351";
+
+				// brainCloud.brainCloudClient.asyncMatch.readMatch(ownerId, matchId, result =>
+				// {
+				// 	var status = result.status;
+				// 	console.log(status + " : " + JSON.stringify(result, null, 2));
+				// 	document.getElementById("incomingResponse").innerHTML = "authenticateUniversal: " + JSON.stringify(result, null, 2);
+				// });
+
+				var entityType = "athletes";
+				var entityId = "7faf6103-e3a7-4400-ab17-1202e46fc4af";
+				var version = 1;
+
+				brainCloud.brainCloudClient.customEntity.deleteEntity(entityType, entityId, version, result =>
+				{
+					var status = result.status;
+					console.log(status + " : " + JSON.stringify(result, null, 2));
+					document.getElementById("incomingResponse").innerHTML = "deleteEntity: " + JSON.stringify(result, null, 2);
+				});
 			}
 		});
+		
+		// //match ID 0fd1340d-349c-44b9-9dbf-9cf4b7dcc351, game ID 13261 and owner ID e7d0f3bf-4019-4811-a6c2-0db877f8252c
+		// var ownerId = "e7d0f3bf-4019-4811-a6c2-0db877f8252c";
+		// var matchId = "0fd1340d-349c-44b9-9dbf-9cf4b7dcc351";
+
+		// brainCloud.brainCloudClient.asyncMatch.readMatch(ownerId, matchId, result =>
+		// {
+		// 	var status = result.status;
+		// 	console.log(status + " : " + JSON.stringify(result, null, 2));
+		// 	document.getElementById("incomingResponse").innerHTML = "authenticateUniversal: " + JSON.stringify(result, null, 2);
+		// });
 	}
 
 	function registerRTT() {
@@ -162,7 +206,7 @@
     			document.getElementById("incomingResponse").innerHTML = JSON.stringify(response, null, 2) + '\n\n' + document.getElementById("incomingResponse").innerHTML;
 
 			});
-		
+
 		}, (response) =>
 		{
 			document.getElementById("incomingResponse").innerHTML = JSON.stringify(response, null, 2) + '\n\n' + document.getElementById("incomingResponse").innerHTML;
@@ -182,6 +226,10 @@
 		});
 
 		brainCloud.brainCloudClient.rttService.registerRTTMessagingCallback((response)=> {
+			document.getElementById("incomingResponse").innerHTML = JSON.stringify(response, null, 2) + '\n\n' + document.getElementById("incomingResponse").innerHTML;
+		});
+
+		brainCloud.brainCloudClient.rttService.registerRTTPresenceCallback((response)=> {
 			document.getElementById("incomingResponse").innerHTML = JSON.stringify(response, null, 2) + '\n\n' + document.getElementById("incomingResponse").innerHTML;
 		});
 
@@ -378,6 +426,8 @@
 						<p>registerRTTEventCallback</p>
 						<p>registerRTTLobbyCallback</p>
 						<p>registerRTTMessagingCallback</p>
+						<p>registerRTTPresenceCallback</p>
+						<p>registerRTTAsyncMatchCallback</p>
 					</td>
 				</tr>
 				<tr><td><hr/></td><td><hr/></td><td><hr/></td></tr>

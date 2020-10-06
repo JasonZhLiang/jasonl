@@ -28,6 +28,14 @@ function BCPlayerState() {
 	bc.playerState.OPERATION_UPDATE_NAME = "UPDATE_NAME";
 	bc.playerState.OPERATION_LOGOUT = "LOGOUT";
 
+	bc.playerState.OPERATION_CLEAR_USER_STATUS = "CLEAR_USER_STATUS";
+	bc.playerState.OPERATION_EXTEND_USER_STATUS = "EXTEND_USER_STATUS";
+	bc.playerState.OPERATION_GET_USER_STATUS = "GET_USER_STATUS";
+	bc.playerState.OPERATION_SET_USER_STATUS = "SET_USER_STATUS";
+
+	bc.playerState.OPERATION_UPDATE_TIME_ZONE_OFFSET = "UPDATE_TIMEZONE_OFFSET";
+	bc.playerState.OPERATION_UPDATE_LANGUAGE_CODE = "UPDATE_LANGUAGE_CODE";
+
 	/**
 	 * @deprecated Use deleteUser instead - Removal after September 1 2017
 	 */
@@ -149,6 +157,46 @@ function BCPlayerState() {
 			operation : bc.playerState.REMOVE_ATTRIBUTES,
 			data : {
 				attributes : attributes
+			},
+			callback : callback
+		});
+	};
+
+	/**
+	 * Remove user's attributes.
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - RemoveAttributes
+	 *
+	 * @param timeZoneOffset Json array of attribute names.
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.updateTimeZoneOffset = function(timeZoneOffset, callback) {
+		bc.brainCloudManager.sendRequest({
+			service : bc.SERVICE_PLAYERSTATE,
+			operation : bc.playerState.OPERATION_UPDATE_TIME_ZONE_OFFSET,
+			data : {
+				timeZoneOffset : timeZoneOffset
+			},
+			callback : callback
+		});
+	};
+
+	/**
+	 * Remove user's attributes.
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - RemoveAttributes
+	 *
+	 * @param languageCode Json array of attribute names.
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.updateLanguageCode = function(languageCode, callback) {
+		bc.brainCloudManager.sendRequest({
+			service : bc.SERVICE_PLAYERSTATE,
+			operation : bc.playerState.OPERATION_UPDATE_LANGUAGE_CODE,
+			data : {
+				languageCode : languageCode
 			},
 			callback : callback
 		});
@@ -325,6 +373,94 @@ function BCPlayerState() {
 			operation: bc.playerState.UPDATE_CONTACT_EMAIL,
 			data: {
 				contactEmail: contactEmail
+			},
+			callback: callback
+		});
+	}
+
+	/**
+	 * Delete's the specified status
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - CLEAR_USER_STATUS
+	 *
+	 * @param statusName the player status
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.clearUserStatus = function(statusName, callback) {
+		bc.brainCloudManager.sendRequest({
+			service: bc.SERVICE_PLAYERSTATE,
+			operation: bc.playerState.OPERATION_CLEAR_USER_STATUS,
+			data: {
+				statusName: statusName
+			},
+			callback: callback
+		});
+	}
+
+	/**
+	 * Stack user's statuses
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - EXTEND_USER_STATUS
+	 *
+	 * @param statusName the player status
+	 * @param additionalSecs extra time
+	 * @param details json string of details
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.extendUserStatus = function(statusName, additionalSecs, details, callback) {
+		bc.brainCloudManager.sendRequest({
+			service: bc.SERVICE_PLAYERSTATE,
+			operation: bc.playerState.OPERATION_EXTEND_USER_STATUS,
+			data: {
+				statusName: statusName,
+				additionalSecs: additionalSecs,
+				details: details
+			},
+			callback: callback
+		});
+	}
+
+	/**
+	 * Get user status
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - GET_USER_STATUS
+	 *
+	 * @param statusName the player status
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.getUserStatus = function(statusName, callback) {
+		bc.brainCloudManager.sendRequest({
+			service: bc.SERVICE_PLAYERSTATE,
+			operation: bc.playerState.OPERATION_GET_USER_STATUS,
+			data: {
+				statusName: statusName
+			},
+			callback: callback
+		});
+	}
+
+	/**
+	 * Get user status
+	 *
+	 * Service Name - PlayerState
+	 * Service Operation - SET_USER_STATUS
+	 *
+	 * @param statusName the player status
+	 * @param durationSecs how long
+	 * @param details json string of details
+	 * @param callback The method to be invoked when the server response is received
+	 */
+	bc.playerState.setUserStatus = function(statusName, durationSecs, details, callback) {
+		bc.brainCloudManager.sendRequest({
+			service: bc.SERVICE_PLAYERSTATE,
+			operation: bc.playerState.OPERATION_SET_USER_STATUS,
+			data: {
+				statusName: statusName,
+				durationSecs: durationSecs,
+				details: details
 			},
 			callback: callback
 		});
