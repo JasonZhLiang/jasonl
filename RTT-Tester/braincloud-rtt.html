@@ -166,29 +166,19 @@
 				// 	document.getElementById("incomingResponse").innerHTML = "authenticateUniversal: " + JSON.stringify(result, null, 2);
 				// });
 
-				var entityType = "athletes";
-				var entityId = "7faf6103-e3a7-4400-ab17-1202e46fc4af";
-				var version = 1;
+				// var entityType = "athletes";
+				// var entityId = "7faf6103-e3a7-4400-ab17-1202e46fc4af";
+				// var version = 1;
 
-				brainCloud.brainCloudClient.customEntity.deleteEntity(entityType, entityId, version, result =>
-				{
-					var status = result.status;
-					console.log(status + " : " + JSON.stringify(result, null, 2));
-					document.getElementById("incomingResponse").innerHTML = "deleteEntity: " + JSON.stringify(result, null, 2);
-				});
+				// brainCloud.brainCloudClient.customEntity.deleteEntity(entityType, entityId, version, result =>
+				// {
+				// 	var status = result.status;
+				// 	console.log(status + " : " + JSON.stringify(result, null, 2));
+				// 	document.getElementById("incomingResponse").innerHTML = "deleteEntity: " + JSON.stringify(result, null, 2);
+				// });
 			}
 		});
 		
-		// //match ID 0fd1340d-349c-44b9-9dbf-9cf4b7dcc351, game ID 13261 and owner ID e7d0f3bf-4019-4811-a6c2-0db877f8252c
-		// var ownerId = "e7d0f3bf-4019-4811-a6c2-0db877f8252c";
-		// var matchId = "0fd1340d-349c-44b9-9dbf-9cf4b7dcc351";
-
-		// brainCloud.brainCloudClient.asyncMatch.readMatch(ownerId, matchId, result =>
-		// {
-		// 	var status = result.status;
-		// 	console.log(status + " : " + JSON.stringify(result, null, 2));
-		// 	document.getElementById("incomingResponse").innerHTML = "authenticateUniversal: " + JSON.stringify(result, null, 2);
-		// });
 	}
 
 	function registerRTT() {
